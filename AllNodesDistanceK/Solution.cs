@@ -10,16 +10,45 @@ namespace AllNodesDistanceK
     public class Solution
     {
 
-        public IList<int> DistanceK(TreeNode root, TreeNode target, int K)
+        public IList<int> DistanceK(TreeNode root, TreeNode target, int k)
         {
+            TreeNodeWithParent targetNodeWithParent = null;
+            var asTree = new TreeNodeWithParent(root, newTreeNodeWithParent =>
+            {
+                if (newTreeNodeWithParent.val == target.val)
+                {
+                    targetNodeWithParent = newTreeNodeWithParent;
+                }
+            });
 
-            var childNodes  = FindChildren(target, K);
+            var ancestorsOfTargetNode = GetAncestorNodes(targetNodeWithParent, k);
+
+
+            var childNodes  = GetDescendantNodesDistanceK(targetNodeWithParent, k);
             return childNodes.Select(node => node.val).ToList();
         }
 
 
+        private IList<TreeNodeWithParent> GetAncestorNodes(TreeNodeWithParent targetNode, int k)
+        {
+            List<TreeNodeWithParent> toBeReturned = new();
+            int count = 0;
+
+            var currentNode = targetNode.Parent;
+            while (currentNode != null && count !=k)
+            {
+                toBeReturned.Add(currentNode);
+                count++;
+                currentNode = currentNode.Parent;
+            }
+
+            return toBeReturned;
+        }
+
+
+
         /// Find child nodes that are distance K from treeNode startNode
-        private List<TreeNode> FindChildren(TreeNode startNode, int k)
+        private IList<TreeNode> GetDescendantNodesDistanceK(TreeNode startNode, int k)
         {
             if (k == 0)
                 return new List<TreeNode>() {startNode};
@@ -29,11 +58,14 @@ namespace AllNodesDistanceK
 
             var level = 0;
             var childNodes = new List<TreeNode>();
-            Recurse(startNode, level, k, childNodes);
+            FindChildNodesRecursive(startNode, level, k, childNodes);
             return childNodes;
         }
 
-        private void Recurse(TreeNode node, int currLevel, int soughtLevel, List<TreeNode> output)
+
+
+
+        private void FindChildNodesRecursive(TreeNode node, int currLevel, int soughtLevel, List<TreeNode> output)
         {
             if (node == null)
                 return;
@@ -44,8 +76,8 @@ namespace AllNodesDistanceK
                 return;
             }
 
-            Recurse(node.left, currLevel+1, soughtLevel, output);
-            Recurse(node.right, currLevel+1, soughtLevel, output);
+            FindChildNodesRecursive(node.left, currLevel+1, soughtLevel, output);
+            FindChildNodesRecursive(node.right, currLevel+1, soughtLevel, output);
         }
     }
 }
