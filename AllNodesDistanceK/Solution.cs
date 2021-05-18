@@ -21,30 +21,44 @@ namespace AllNodesDistanceK
                 }
             });
 
+
+            // Thinking I could use Djikstra to solve this issue - this code is convoluted and requiring
+            // more work to fix. I have existing Djikstra code I could re-use.
+            // First generate list containing target node and its parents
             var nodesToGetChildrenOf = new List<TreeNode>();
             nodesToGetChildrenOf.Add(targetNodeWithParent);
-            nodesToGetChildrenOf.AddRange(GetAncestorsKLevelsAbove(targetNodeWithParent, k));
+            nodesToGetChildrenOf.AddRange(GetAncestorsUpToKLevelsAbove(targetNodeWithParent, k));
 
             var nodesWithinDistanceK = new List<TreeNode>();
-            for (int i = 0; i < k && i< nodesToGetChildrenOf.Count; i++)
+            for (int i = 0; i < k && i < nodesToGetChildrenOf.Count; i++)
             {
                 var ancestorNode = nodesToGetChildrenOf[i];
                 var childNodes = GetDescendantNodesDistanceK(ancestorNode, k - i);
                 nodesWithinDistanceK.AddRange(childNodes);
             }
-            
+
+            var currentNode = targetNodeWithParent.Parent;
+            int count = 1; // parent node is one level above
+
+            while (currentNode != null && count < k)
+            {
+                nodesWithinDistanceK.Remove(currentNode);
+                count++;
+                currentNode = currentNode.Parent;
+            }
+
             return nodesWithinDistanceK.Select(node => node.val).ToList();
         }
 
 
-        private IList<TreeNode> GetAncestorsKLevelsAbove(TreeNodeWithParent targetNode, int k)
+        private IList<TreeNode> GetAncestorsUpToKLevelsAbove(TreeNodeWithParent targetNode, int k)
         {
             List<TreeNode> toBeReturned = new();
             
             var currentNode = targetNode.Parent;
             int count = 1; // parent node is one level above
 
-            while (currentNode != null && count !=k)
+            while (currentNode != null && count <=k)
             {
                 toBeReturned.Add(currentNode);
                 count++;
