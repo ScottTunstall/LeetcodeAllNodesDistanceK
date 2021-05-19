@@ -50,6 +50,9 @@ namespace AllNodesDistanceK
         }
 
 
+
+        // This DumpTree function lets me see what tree structures are being passed by leetcode's test cases,
+        // so I can recreate them in code, for testing and debugging purposes.
         [Conditional("DEBUG")]
         private void DumpTree(TreeNode root)
         {
