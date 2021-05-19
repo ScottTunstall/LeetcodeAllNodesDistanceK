@@ -14,6 +14,9 @@ namespace AllNodesDistanceK
 
         public IList<int> DistanceK(TreeNode root, TreeNode target, int k)
         {
+            if (k == 0)
+                return new List<int>() {target.val};
+
             int nodeCount = 0;
             TreeNodeWithParent targetNodeWithParent = null;
             var asTree = new TreeNodeWithParent(root, newTreeNodeWithParent =>
