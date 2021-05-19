@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace AllNodesDistanceK
 
         public IList<int> DistanceK(TreeNode root, TreeNode target, int k)
         {
+            //DumpTree(root);
+
             if (k == 0)
                 return new List<int>() {target.val};
 
@@ -28,8 +31,8 @@ namespace AllNodesDistanceK
                 }
             });
 
-            _distances = new int[nodeCount+1];
-            _visited = new bool[nodeCount+1];
+            _distances = new int[nodeCount];
+            _visited = new bool[nodeCount];
 
             _visited[targetNodeWithParent.val] = true;
 
@@ -37,7 +40,7 @@ namespace AllNodesDistanceK
             TraverseUpTree(targetNodeWithParent);
 
             var toBeReturned = new List<int>();
-            for (int i = 1; i < _distances.Length; i++)
+            for (int i = 0; i < _distances.Length; i++)
             {
                 if (_distances[i] == k)
                     toBeReturned.Add(i);
@@ -47,6 +50,28 @@ namespace AllNodesDistanceK
         }
 
 
+        [Conditional("DEBUG")]
+        private void DumpTree(TreeNode root)
+        {
+            DumpTreeRecursive(root);
+        }
+
+        private void DumpTreeRecursive(TreeNode node)
+        {
+            Console.WriteLine("Node:  " + (node !=null ? node.val.ToString() : "NULL"));
+            if (node == null) return;
+
+            Console.WriteLine("Left:  " + (node.left != null ? node.left.val.ToString() : "NULL"));
+            Console.WriteLine("Right: " + (node.right != null ? node.right.val.ToString() : "NULL"));
+            Console.WriteLine("");
+
+            if (node.left != null)
+                DumpTreeRecursive(node.left);
+
+            if (node.right!=null)
+                DumpTreeRecursive(node.right);
+
+        }
 
         private void TraverseUpTree(TreeNodeWithParent targetNodeWithParent)
         {
