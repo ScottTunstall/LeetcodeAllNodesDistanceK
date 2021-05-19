@@ -9,97 +9,70 @@ namespace AllNodesDistanceK
 {
     public class Solution
     {
+        private int[] _distances;
+        private bool[] _visited;
 
         public IList<int> DistanceK(TreeNode root, TreeNode target, int k)
         {
+            int nodeCount = 0;
             TreeNodeWithParent targetNodeWithParent = null;
             var asTree = new TreeNodeWithParent(root, newTreeNodeWithParent =>
             {
+                nodeCount ++;
                 if (newTreeNodeWithParent.val == target.val)
                 {
                     targetNodeWithParent = newTreeNodeWithParent;
                 }
             });
 
+            _distances = new int[nodeCount];
+            _visited = new bool[nodeCount];
 
-            // Thinking I could use Djikstra to solve this issue - this code is convoluted and requiring
-            // more work to fix. I have existing Djikstra code I could re-use.
-            // First generate list containing target node and its parents
-            var nodesToGetChildrenOf = new List<TreeNode>();
-            nodesToGetChildrenOf.Add(targetNodeWithParent);
-            nodesToGetChildrenOf.AddRange(GetAncestorsUpToKLevelsAbove(targetNodeWithParent, k));
+            _visited[targetNodeWithParent.val] = true;
 
-            var nodesWithinDistanceK = new List<TreeNode>();
-            for (int i = 0; i < k && i < nodesToGetChildrenOf.Count; i++)
-            {
-                var ancestorNode = nodesToGetChildrenOf[i];
-                var childNodes = GetDescendantNodesDistanceK(ancestorNode, k - i);
-                nodesWithinDistanceK.AddRange(childNodes);
-            }
+            TraverseDownTree(targetNodeWithParent);
+            TraverseUpTree(targetNodeWithParent);
 
-            var currentNode = targetNodeWithParent.Parent;
-            int count = 1; // parent node is one level above
-
-            while (currentNode != null && count < k)
-            {
-                nodesWithinDistanceK.Remove(currentNode);
-                count++;
-                currentNode = currentNode.Parent;
-            }
-
-            return nodesWithinDistanceK.Select(node => node.val).ToList();
+            return new List<int>();
         }
 
 
-        private IList<TreeNode> GetAncestorsUpToKLevelsAbove(TreeNodeWithParent targetNode, int k)
+
+        private void TraverseUpTree(TreeNodeWithParent targetNodeWithParent)
         {
-            List<TreeNode> toBeReturned = new();
-            
-            var currentNode = targetNode.Parent;
-            int count = 1; // parent node is one level above
+            var currentDistance = 1;
+            var parent = targetNodeWithParent.Parent;
 
-            while (currentNode != null && count <=k)
+            while (parent != null)
             {
-                toBeReturned.Add(currentNode);
-                count++;
-                currentNode = currentNode.Parent;
+                TraverseDownTreeRecursive(parent, currentDistance);
+                currentDistance++;
+
+                parent = parent.Parent;
+            }
+       
+        }
+
+        private void TraverseDownTree(TreeNodeWithParent startNode)
+        {
+            TraverseDownTreeRecursive(startNode, 0);
+        }
+
+
+        private void TraverseDownTreeRecursive(TreeNode treeNode, int currentDistance)
+        {
+            if (treeNode == null)
+                return;
+
+            if (!_visited[treeNode.val])
+            {
+                _distances[treeNode.val] = currentDistance;
+                _visited[treeNode.val] = true;
             }
 
-            return toBeReturned;
+            TraverseDownTreeRecursive(treeNode.left, currentDistance + 1);
+            TraverseDownTreeRecursive(treeNode.right, currentDistance + 1);
         }
-
-
-
-        /// Find child nodes that are distance K from treeNode startNode
-        private IList<TreeNode> GetDescendantNodesDistanceK(TreeNode startNode, int k)
-        {
-            if (k == 0)
-                return new List<TreeNode>() {startNode};
-
-            if (k == 1)
-                return new List<TreeNode>() {startNode.left, startNode.right};
-
-            var level = 0;
-            var childNodes = new List<TreeNode>();
-            FindChildNodesRecursive(startNode, level, k, childNodes);
-            return childNodes;
-        }
-
         
-
-        private void FindChildNodesRecursive(TreeNode node, int currLevel, int soughtLevel, List<TreeNode> output)
-        {
-            if (node == null)
-                return;
-
-            if (currLevel == soughtLevel)
-            {
-                output.Add(node);
-                return;
-            }
-
-            FindChildNodesRecursive(node.left, currLevel+1, soughtLevel, output);
-            FindChildNodesRecursive(node.right, currLevel+1, soughtLevel, output);
-        }
     }
 }

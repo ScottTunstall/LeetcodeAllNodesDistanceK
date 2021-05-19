@@ -17,13 +17,14 @@ namespace AllNodesDistanceK
                 }
             };
 
-            var target = root.left.left;
-
             root.right = new TreeNode(1)
             {
                 left = new TreeNode(0),
                 right = new TreeNode(8)
             };
+
+            var target = root.left; //.left;
+
 
             var solution = new Solution();
             var result = solution.DistanceK(root, target, 4);
