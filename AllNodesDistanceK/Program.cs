@@ -27,7 +27,7 @@ namespace AllNodesDistanceK
 
 
             var solution = new Solution();
-            var result = solution.DistanceK(root, target, 4);
+            var result = solution.DistanceK(root, target, 2);
         }
     }
 }

@@ -25,15 +25,22 @@ namespace AllNodesDistanceK
                 }
             });
 
-            _distances = new int[nodeCount];
-            _visited = new bool[nodeCount];
+            _distances = new int[nodeCount+1];
+            _visited = new bool[nodeCount+1];
 
             _visited[targetNodeWithParent.val] = true;
 
             TraverseDownTree(targetNodeWithParent);
             TraverseUpTree(targetNodeWithParent);
 
-            return new List<int>();
+            var toBeReturned = new List<int>();
+            for (int i = 1; i < _distances.Length; i++)
+            {
+                if (_distances[i] == k)
+                    toBeReturned.Add(i);
+            }
+
+            return toBeReturned;
         }
 
 
