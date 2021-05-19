@@ -22,7 +22,7 @@ namespace AllNodesDistanceK
 
             int nodeCount = 0;
             TreeNodeWithParent targetNodeWithParent = null;
-            var asTree = new TreeNodeWithParent(root, newTreeNodeWithParent =>
+            new TreeNodeWithParent(root, newTreeNodeWithParent =>
             {
                 nodeCount ++;
                 if (newTreeNodeWithParent.val == target.val)
